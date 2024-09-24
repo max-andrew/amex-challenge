@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from "react";
 
-const cache: Record<string, any> = {};
+let cache: Record<string, any> = {};
 
 type UseCachingFetch = (url: string) => {
   isLoading: boolean;
@@ -124,8 +124,18 @@ export const preloadCachingFetch = async (url: string): Promise<void> => {
  * 4. This file passes a type-check.
  *
  */
-export const serializeCache = (): string => "";
+export const serializeCache = (): string => {
+  return JSON.stringify(cache);
+};
 
-export const initializeCache = (serializedCache: string): void => {};
+export const initializeCache = (serializedCache: string): void => {
+  try {
+    cache = JSON.parse(serializedCache);
+  } catch (error) {
+    console.error("Error initializing cache", error);
+  }
+};
 
-export const wipeCache = (): void => {};
+export const wipeCache = (): void => {
+  cache = {};
+};
