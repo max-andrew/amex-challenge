@@ -1,18 +1,50 @@
+"use strict";
 // You may edit this file, add new files to support this file,
 // and/or add new dependencies to the project as you see fit.
 // However, you must not change the surface API presented from this file,
 // and you should not need to change any other files in the project to complete the challenge
-
-import { useState, useEffect } from "react";
-
-let cache: Record<string, object> = {};
-
-type UseCachingFetch = (url: string) => {
-  isLoading: boolean;
-  data: unknown;
-  error: Error | null;
-};
-
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
+    }
+    return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done
+          ? resolve(result.value)
+          : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.wipeCache =
+  exports.initializeCache =
+  exports.serializeCache =
+  exports.preloadCachingFetch =
+  exports.useCachingFetch =
+    void 0;
+const react_1 = require("react");
+let cache = {};
 /**
  * 1. Implement a caching fetch hook. The hook should return an object with the following properties:
  * - isLoading: a boolean that is true when the fetch is in progress and false otherwise
@@ -31,49 +63,45 @@ type UseCachingFetch = (url: string) => {
  * 4. This file passes a type-check.
  *
  */
-export const useCachingFetch: UseCachingFetch = (url) => {
-  const [data, setData] = useState<unknown>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
+const useCachingFetch = (url) => {
+  const [data, setData] = (0, react_1.useState)(null);
+  const [isLoading, setIsLoading] = (0, react_1.useState)(false);
+  const [error, setError] = (0, react_1.useState)(null);
+  (0, react_1.useEffect)(() => {
     if (cache[url]) {
       // Use existing cached data if available
       setData(cache[url]);
       return;
     }
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      // Reset the error
-      setError(null);
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
+    const fetchData = () =>
+      __awaiter(void 0, void 0, void 0, function* () {
+        setIsLoading(true);
+        // Reset the error
+        setError(null);
+        try {
+          const response = yield fetch(url);
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+          const result = yield response.json();
+          // Store res in cache
+          cache[url] = result;
+          setData(result);
+        } catch (err) {
+          setError(err);
+        } finally {
+          setIsLoading(false);
         }
-        const result = await response.json();
-        // Store res in cache
-        cache[url] = result;
-        setData(result);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+      });
     fetchData();
   }, [url]);
-
   return {
     isLoading,
     data,
     error,
   };
 };
-
+exports.useCachingFetch = useCachingFetch;
 /**
  * 2. Implement a preloading caching fetch function. The function should fetch the data.
  *
@@ -88,26 +116,26 @@ export const useCachingFetch: UseCachingFetch = (url) => {
  * 3. This file passes a type-check.
  *
  */
-export const preloadCachingFetch = async (url: string): Promise<void> => {
-  // Skip if the data already exists in cache
-  if (cache[url]) {
-    return;
-  }
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+const preloadCachingFetch = (url) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    // Skip if the data already exists in cache
+    if (cache[url]) {
+      return;
     }
-    const result = await response.json();
-    // Store in cache if request is successful
-    cache[url] = result;
-  } catch (error) {
-    console.error(`Preload failed on URL: ${url}`, error);
-    throw error;
-  }
-};
-
+    try {
+      const response = yield fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const result = yield response.json();
+      // Store in cache if request is successful
+      cache[url] = result;
+    } catch (error) {
+      console.error(`Preload failed on URL: ${url}`, error);
+      throw error;
+    }
+  });
+exports.preloadCachingFetch = preloadCachingFetch;
 /**
  * 3.1 Implement a serializeCache function that serializes the cache to a string.
  * 3.2 Implement an initializeCache function that initializes the cache from a serialized cache string.
@@ -124,18 +152,20 @@ export const preloadCachingFetch = async (url: string): Promise<void> => {
  * 4. This file passes a type-check.
  *
  */
-export const serializeCache = (): string => {
+const serializeCache = () => {
   return JSON.stringify(cache);
 };
-
-export const initializeCache = (serializedCache: string): void => {
+exports.serializeCache = serializeCache;
+const initializeCache = (serializedCache) => {
   try {
     cache = JSON.parse(serializedCache);
   } catch (error) {
     console.error("Error initializing cache", error);
   }
 };
-
-export const wipeCache = (): void => {
+exports.initializeCache = initializeCache;
+const wipeCache = () => {
   cache = {};
 };
+exports.wipeCache = wipeCache;
+//# sourceMappingURL=cachingFetch.js.map

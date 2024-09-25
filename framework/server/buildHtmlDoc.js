@@ -1,7 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const buildHtmlDoc = (
-  [initialHtml, initialData]: [string, string?],
+  [initialHtml, initialData],
   withScript = true,
-): string => `<!doctype html>
+) => `<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,5 +18,5 @@ const buildHtmlDoc = (
         ${withScript ? '<script src="/client.js"></script>' : ""}
     </body>
 </html>`;
-
-export default buildHtmlDoc;
+exports.default = buildHtmlDoc;
+//# sourceMappingURL=buildHtmlDoc.js.map
